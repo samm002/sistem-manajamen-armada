@@ -21,6 +21,10 @@ func VehicleLocationRouter(router fiber.Router, validator *validator.Validate) {
 	vehicleLocationRouter.Get("", controller.FindAll)
 	vehicleLocationRouter.Get("/:vehicleId/history", controller.FindHistory)
 	vehicleLocationRouter.Get("/:vehicleId/location", controller.FindLatestLocationById)
-	vehicleLocationRouter.Put("/:vehicleId", controller.Update)
+
+	// Tidak dipakai
+	vehicleLocationRouter.Patch("/:vehicleId", controller.Update)
+	
+	// Tidak dipakai
 	vehicleLocationRouter.Delete("/:vehicleId", controller.Delete)
 }

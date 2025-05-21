@@ -9,6 +9,7 @@ import (
 	"sistem-manajemen-armada/api/dto"
 	"sistem-manajemen-armada/api/service"
 	"strings"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -19,7 +20,11 @@ type Controller interface {
 	FindAll(ctx *fiber.Ctx) error
 	FindHistory(ctx *fiber.Ctx) error
 	FindLatestLocationById(ctx *fiber.Ctx) error
+
+	// Tidak dipakai
 	Update(ctx *fiber.Ctx) error
+	
+	// Tidak dipakai
 	Delete(ctx *fiber.Ctx) error
 }
 
@@ -36,11 +41,15 @@ func (c *controller) Create(ctx *fiber.Ctx) error {
 	var payload dto.CreateVehicleLocationDto
 
 	if err := ctx.BodyParser(&payload); err != nil {
-		return ctx.Status(http.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("create vehicle location failed", errors.New("invalid request body")))
+		return ctx.Status(http.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("create vehicle location failed", err))
 	}
 
 	if payload.VehicleId == "" {
 		payload.VehicleId = util.GenerateRandomVehicleId()
+	}
+
+	if payload.Timestamp == 0 {
+		payload.Timestamp = time.Now().Unix()
 	}
 
 	if !validatorUtil.IsValidVehicleId(payload.VehicleId) {
@@ -48,7 +57,7 @@ func (c *controller) Create(ctx *fiber.Ctx) error {
 	}
 
 	if err := c.validator.Struct(&payload); err != nil {
-		return ctx.Status(http.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("create vehicle location failed", errors.New("validation failed")))
+		return ctx.Status(http.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("create vehicle location failed", err))
 	}
 
 	vehicleLocation, err := c.service.Create(&payload)
@@ -132,6 +141,7 @@ func (c *controller) FindLatestLocationById(ctx *fiber.Ctx) error {
 	return ctx.JSON(responseUtil.GenerateSuccessResponse("get vehicle location latest location success", vehicleLocation))
 }
 
+// Tidak dipakai
 func (c *controller) Update(ctx *fiber.Ctx) error {
 	vehicleId := ctx.Params("vehicleId")
 
@@ -162,6 +172,7 @@ func (c *controller) Update(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusCreated).JSON(responseUtil.GenerateSuccessResponse("update vehicle location success", vehicleLocation))
 }
 
+// Tidak dipakai
 func (c *controller) Delete(ctx *fiber.Ctx) error {
 	vehicleId := ctx.Params("vehicleId")
 

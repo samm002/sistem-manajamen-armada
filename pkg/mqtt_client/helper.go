@@ -2,9 +2,13 @@ package mqtt_client
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
+	"sistem-manajemen-armada/api/common/util"
+	validatorUtil "sistem-manajemen-armada/api/common/util/validator"
 	"sistem-manajemen-armada/api/dto"
+	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
@@ -57,6 +61,18 @@ func Publish(client mqtt.Client, topic string, payload string) {
 // function related to api
 func validateVehicleLocationPayload(msg []byte) (*dto.CreateVehicleLocationDto, error) {
 	var payload dto.CreateVehicleLocationDto
+
+	if payload.VehicleId == "" {
+		payload.VehicleId = util.GenerateRandomVehicleId()
+	}
+
+	if payload.Timestamp == 0 {
+		payload.Timestamp = time.Now().Unix()
+	}
+
+	if !validatorUtil.IsValidVehicleId(payload.VehicleId) {
+		return nil, errors.New("invalid requestId format")
+	}
 
 	if err := json.Unmarshal(msg, &payload); err != nil {
 		return nil, err

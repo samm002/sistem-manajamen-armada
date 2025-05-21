@@ -17,7 +17,11 @@ type Service interface {
 	FindAll() ([]*dto.VehicleLocationDto, error)
 	FindHistory(vehicleId string, start *int, end *int) ([]*dto.VehicleLocationDto, error)
 	FindLatestLocationById(vehicleId string) (*dto.VehicleLocationDto, error)
+
+	// Tidak dipakai
 	Update(vehicleId string, payload *dto.UpdateVehicleLocationDto) (*map[string]interface{}, error)
+	
+	// Tidak dipakai
 	Delete(vehicleId string) error
 }
 
@@ -106,6 +110,7 @@ func (s *service) FindLatestLocationById(vehicleId string) (*dto.VehicleLocation
 	return &response, nil
 }
 
+// Tidak dipakai
 func (s *service) Update(vehicleId string, payload *dto.UpdateVehicleLocationDto) (*map[string]interface{}, error) {
 	sanitizedPayload := payload.ConstructUpdatePayload()
 
@@ -116,6 +121,7 @@ func (s *service) Update(vehicleId string, payload *dto.UpdateVehicleLocationDto
 	return &sanitizedPayload, nil
 }
 
+// Tidak dipakai
 func (s *service) Delete(vehicleId string) error {
 	return s.repository.Delete(vehicleId)
 }

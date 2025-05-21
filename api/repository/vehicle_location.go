@@ -14,7 +14,11 @@ type Repository interface {
 	FindAll() ([]*model.VehicleLocation, error)
 	FindHistory(vehicleId string, start *int, end *int) ([]*model.VehicleLocation, error)
 	FindLatestLocationById(vehicleId string) (*model.VehicleLocation, error)
+
+	// Tidak dipakai
 	Update(vehicleId string, vehicleLocation map[string]interface{}) error
+	
+	// Tidak dipakai
 	Delete(vehicleId string) error
 }
 
@@ -86,10 +90,12 @@ func (r *repository) FindLatestLocationById(vehicleId string) (*model.VehicleLoc
 	return &vehicleLocation, nil
 }
 
+// Tidak dipakai
 func (r *repository) Update(vehicleId string, vehicleLocation map[string]interface{}) error {
 	return r.db.Model(&model.VehicleLocation{VehicleId: vehicleId}).Updates(vehicleLocation).Error
 }
 
+// Tidak dipakai
 func (r *repository) Delete(vehicleId string) error {
 	return r.db.Delete(&model.VehicleLocation{}, vehicleId).Error
 }
