@@ -17,7 +17,7 @@ type Repository interface {
 
 	// Tidak dipakai
 	Update(vehicleId string, vehicleLocation map[string]interface{}) error
-	
+
 	// Tidak dipakai
 	Delete(vehicleId string) error
 }
@@ -45,7 +45,7 @@ func (r *repository) Create(vehicleLocation *model.VehicleLocation) error {
 func (r *repository) FindAll() ([]*model.VehicleLocation, error) {
 	var vehicleLocations []*model.VehicleLocation
 
-	if err := r.db.Find(&vehicleLocations).Error; err != nil {
+	if err := r.db.Order("vehicle_id ASC, timestamp DESC").Find(&vehicleLocations).Error; err != nil {
 		return nil, err
 	}
 
@@ -68,7 +68,7 @@ func (r *repository) FindHistory(vehicleId string, start *int, end *int) ([]*mod
 	if err := query.Find(&vehicleLocations).Error; err != nil {
 		return nil, err
 	}
-	
+
 	if len(vehicleLocations) == 0 {
 		return nil, fmt.Errorf("vehicle with id %s not found", vehicleId)
 	}
