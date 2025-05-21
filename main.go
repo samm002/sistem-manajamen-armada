@@ -6,6 +6,7 @@ import (
 	"sistem-manajemen-armada/api/router"
 	"sistem-manajemen-armada/config"
 	"sistem-manajemen-armada/database"
+	"sistem-manajemen-armada/pkg/mqtt_client"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
@@ -16,6 +17,7 @@ var validatorInstance = validator.New()
 
 func main() {
 	database.InitializeDB()
+	mqtt_client.InitializeMqtt()
 
 	app := fiber.New()
 	port := strconv.Itoa(config.Env.PORT)

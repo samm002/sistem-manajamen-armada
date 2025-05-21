@@ -23,8 +23,7 @@ var (
 )
 
 func InitializeDB() {
-	log.Print("called")
-	connectionString := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s", db_host, db_user, db_password, db_name, db_port, db_ssl_mode, db_time_zone)
+	connectionString := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s", db_host, db_user, db_password, db_name, db_port, db_ssl_mode, db_time_zone)
 
 	db, err := gorm.Open(postgres.Open(connectionString), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
@@ -33,5 +32,6 @@ func InitializeDB() {
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
+
 	DB = db
 }

@@ -2,7 +2,6 @@ package controller
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"sistem-manajemen-armada/api/common/util"
 	responseUtil "sistem-manajemen-armada/api/common/util/response"
@@ -18,7 +17,8 @@ import (
 type Controller interface {
 	Create(ctx *fiber.Ctx) error
 	FindAll(ctx *fiber.Ctx) error
-	FindById(ctx *fiber.Ctx) error
+	FindHistory(ctx *fiber.Ctx) error
+	FindLatestLocationById(ctx *fiber.Ctx) error
 	Update(ctx *fiber.Ctx) error
 	Delete(ctx *fiber.Ctx) error
 }
@@ -36,7 +36,7 @@ func (c *controller) Create(ctx *fiber.Ctx) error {
 	var payload dto.CreateVehicleLocationDto
 
 	if err := ctx.BodyParser(&payload); err != nil {
-		return ctx.Status(http.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("invalid request body", err))
+		return ctx.Status(http.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("create vehicle location failed", errors.New("invalid request body")))
 	}
 
 	if payload.VehicleId == "" {
@@ -44,15 +44,13 @@ func (c *controller) Create(ctx *fiber.Ctx) error {
 	}
 
 	if !validatorUtil.IsValidVehicleId(payload.VehicleId) {
-		return ctx.Status(fiber.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("invalid vehicleId format", nil))
+		return ctx.Status(fiber.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("create vehicle location failed", errors.New("invalid requestId format")))
 	}
 
 	if err := c.validator.Struct(&payload); err != nil {
-		return ctx.Status(http.StatusUnprocessableEntity).JSON(responseUtil.GenerateFailedResponse("validation failed", err))
+		return ctx.Status(http.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("create vehicle location failed", errors.New("validation failed")))
 	}
 
-	log.Println("payload :", payload)
-	log.Println("&payload :", &payload)
 	vehicleLocation, err := c.service.Create(&payload)
 
 	if err != nil {
@@ -72,24 +70,66 @@ func (c *controller) FindAll(ctx *fiber.Ctx) error {
 	return ctx.JSON(responseUtil.GenerateSuccessResponse("get vehicle locations success", vehicleLocations))
 }
 
-func (c *controller) FindById(ctx *fiber.Ctx) error {
+func (c *controller) FindHistory(ctx *fiber.Ctx) error {
 	vehicleId := ctx.Params("vehicleId")
+	start := ctx.Query("start")
+	end := ctx.Query("end")
 
 	if !validatorUtil.IsValidVehicleId(vehicleId) {
-		return ctx.Status(fiber.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("get vehicle location failed", errors.New("invalid vehicleId format")))
+		return ctx.Status(fiber.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("get vehicle location history failed", errors.New("invalid vehicleId format")))
 	}
 
-	vehicleLocation, err := c.service.FindById(vehicleId)
+	convertedStart, err := util.ConvertStringToIntPointer(start)
+
+	if err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(
+			responseUtil.GenerateFailedResponse("get vehicle location history failed", errors.New("invalid start format")),
+		)
+	}
+
+	convertedEnd, err := util.ConvertStringToIntPointer(end)
+
+	if err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(
+			responseUtil.GenerateFailedResponse("get vehicle location history failed", errors.New("invalid end format")),
+		)
+	}
+
+	if err := validatorUtil.IsValidDateRange(convertedStart, convertedEnd); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("get vehicle location history failed", err))
+	}
+
+	vehicleLocation, err := c.service.FindHistory(vehicleId, convertedStart, convertedEnd)
 
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
-			return ctx.Status(http.StatusNotFound).JSON(responseUtil.GenerateFailedResponse("get vehicle location failed", err))
+			return ctx.Status(http.StatusNotFound).JSON(responseUtil.GenerateFailedResponse("get vehicle location history failed", err))
 		} else {
-			return ctx.Status(http.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("get vehicle location failed", err))
+			return ctx.Status(http.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("get vehicle location history failed", err))
 		}
 	}
 
-	return ctx.JSON(responseUtil.GenerateSuccessResponse("get vehicle location success", vehicleLocation))
+	return ctx.JSON(responseUtil.GenerateSuccessResponse("get vehicle location history success", vehicleLocation))
+}
+
+func (c *controller) FindLatestLocationById(ctx *fiber.Ctx) error {
+	vehicleId := ctx.Params("vehicleId")
+
+	if !validatorUtil.IsValidVehicleId(vehicleId) {
+		return ctx.Status(fiber.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("get vehicle location latest location failed", errors.New("invalid vehicleId format")))
+	}
+
+	vehicleLocation, err := c.service.FindLatestLocationById(vehicleId)
+
+	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			return ctx.Status(http.StatusNotFound).JSON(responseUtil.GenerateFailedResponse("get vehicle location latest location failed", err))
+		} else {
+			return ctx.Status(http.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("get vehicle location latest location failed", err))
+		}
+	}
+
+	return ctx.JSON(responseUtil.GenerateSuccessResponse("get vehicle location latest location success", vehicleLocation))
 }
 
 func (c *controller) Update(ctx *fiber.Ctx) error {
@@ -106,7 +146,7 @@ func (c *controller) Update(ctx *fiber.Ctx) error {
 	}
 
 	if err := c.validator.Struct(&payload); err != nil {
-		return ctx.Status(http.StatusUnprocessableEntity).JSON(responseUtil.GenerateFailedResponse("validation failed", err))
+		return ctx.Status(http.StatusBadRequest).JSON(responseUtil.GenerateFailedResponse("validation failed", err))
 	}
 
 	vehicleLocation, err := c.service.Update(vehicleId, &payload)

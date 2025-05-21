@@ -19,7 +19,8 @@ func VehicleLocationRouter(router fiber.Router, validator *validator.Validate) {
 
 	vehicleLocationRouter.Post("", controller.Create)
 	vehicleLocationRouter.Get("", controller.FindAll)
-	vehicleLocationRouter.Get("/:vehicleId", controller.FindById)
+	vehicleLocationRouter.Get("/:vehicleId/history", controller.FindHistory)
+	vehicleLocationRouter.Get("/:vehicleId/location", controller.FindLatestLocationById)
 	vehicleLocationRouter.Put("/:vehicleId", controller.Update)
 	vehicleLocationRouter.Delete("/:vehicleId", controller.Delete)
 }
