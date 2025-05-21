@@ -1,10 +1,15 @@
 package dto
 
-import "sistem-manajemen-armada/database/model"
+import (
+	"sistem-manajemen-armada/common/constant"
+	"sistem-manajemen-armada/common/dto"
+	"sistem-manajemen-armada/database/model"
+)
 
 type VehicleLocationMapper interface {
-	ToModel() model.VehicleLocation
 	ConstructUpdatePayload() map[string]interface{}
+	ToGeofenceEventMessage() model.VehicleLocation
+	ToModel() model.VehicleLocation
 }
 
 const VehicleIdPattern = "^[A-Z]{1,2}[0-9]{1,4}[A-Z]{1,3}$"
@@ -73,6 +78,18 @@ func (v *VehicleLocationDto) ToModel() model.VehicleLocation {
 		VehicleId: v.VehicleId,
 		Latitude:  v.Latitude,
 		Longitude: v.Longitude,
+		Timestamp: v.Timestamp,
+	}
+}
+
+func (v *CreateVehicleLocationDto) ToGeofenceEventMessage() dto.GeofenceEventMessageDto {
+	return dto.GeofenceEventMessageDto{
+		VehicleId: v.VehicleId,
+		Event:     constant.GeofenceEventName,
+		Location: dto.LocationDto{
+			Latitude:  v.Latitude,
+			Longitude: v.Longitude,
+		},
 		Timestamp: v.Timestamp,
 	}
 }

@@ -23,6 +23,7 @@ type EnvConfig struct {
 	BROKER_USERNAME string `env:"BROKER_USERNAME" validate:"required"`
 	BROKER_PASSWORD string `env:"BROKER_PASSWORD" validate:"required"`
 	MQTT_CLIENT_ID  string `env:"MQTT_CLIENT_ID" validate:"required"`
+	RABBITMQ_URL    string `env:"RABBITMQ_URL" validate:"required"`
 }
 
 var Env *EnvConfig

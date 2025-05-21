@@ -1,8 +1,15 @@
 package service
 
 import (
+	"fmt"
+	"log"
+	"sistem-manajemen-armada/api/common/util"
 	"sistem-manajemen-armada/api/dto"
 	"sistem-manajemen-armada/api/repository"
+	"sistem-manajemen-armada/common/constant"
+	"sistem-manajemen-armada/pkg/rabbitmq"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type Service interface {
@@ -16,10 +23,11 @@ type Service interface {
 
 type service struct {
 	repository repository.Repository
+	validator  *validator.Validate
 }
 
-func NewService(repository repository.Repository) Service {
-	return &service{repository}
+func NewService(repository repository.Repository, validator *validator.Validate) Service {
+	return &service{repository, validator}
 }
 
 func (s *service) Create(payload *dto.CreateVehicleLocationDto) (*dto.VehicleLocationDto, error) {
@@ -30,6 +38,24 @@ func (s *service) Create(payload *dto.CreateVehicleLocationDto) (*dto.VehicleLoc
 	}
 
 	response := dto.ToResponse(&vehicleLocation)
+
+	distance := util.CalculateCoordinateDistance(
+		payload.Latitude, payload.Longitude,
+		constant.GeofenceLatitude, constant.GeofenceLongitude,
+	)
+
+	fmt.Println("distance :", distance)
+
+	if distance <= 50 {
+		encodedPayload, err := util.GenerateGeofenceEventMessage(payload, s.validator)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		rabbitmq.Publish(*encodedPayload)
+
+	}
 
 	return &response, nil
 }

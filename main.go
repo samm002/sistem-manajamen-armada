@@ -7,6 +7,7 @@ import (
 	"sistem-manajemen-armada/config"
 	"sistem-manajemen-armada/database"
 	"sistem-manajemen-armada/pkg/mqtt_client"
+	"sistem-manajemen-armada/pkg/rabbitmq"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
@@ -17,7 +18,8 @@ var validatorInstance = validator.New()
 
 func main() {
 	database.InitializeDB()
-	mqtt_client.InitializeMqtt()
+	mqtt_client.InitializeMqtt(validatorInstance)
+	rabbitmq.InitializeRabbitMq()
 
 	app := fiber.New()
 	port := strconv.Itoa(config.Env.PORT)

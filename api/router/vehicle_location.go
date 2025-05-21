@@ -12,7 +12,7 @@ import (
 
 func VehicleLocationRouter(router fiber.Router, validator *validator.Validate) {
 	repository := repository.NewRepository(database.DB)
-	service := service.NewService(repository)
+	service := service.NewService(repository, validator)
 	controller := controller.NewController(service, validator)
 
 	vehicleLocationRouter := router.Group("/vehicle-locations")

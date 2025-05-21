@@ -10,8 +10,6 @@ import (
 )
 
 func ReceivedMessageHandler(client mqtt.Client, message mqtt.Message) {
-	log.Printf("topic :%s\n", message.Topic())
-
 	payload, err := validateVehicleLocationPayload(message.Payload())
 
 	if err != nil {
@@ -27,7 +25,7 @@ func ReceivedMessageHandler(client mqtt.Client, message mqtt.Message) {
 			return
 		}
 
-		log.Printf("message (payload) :%s\n", message.Payload())
+		log.Printf("[MQTT Client Message Handler] - received message (payload) from topic %s :\n%s", message.Topic(), message.Payload())
 	}
 }
 
