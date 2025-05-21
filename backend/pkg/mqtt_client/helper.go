@@ -49,13 +49,17 @@ func Subscribe(client mqtt.Client, topics []string) {
 	}
 }
 
-func Publish(client mqtt.Client, topic string, payload string) {
-	text := fmt.Sprintf("message : %s", payload)
-
-	token := client.Publish(topic, 0, false, text)
+func Publish(client mqtt.Client, topic string, payload interface{}) error {
+	token := client.Publish(topic, 1, false, payload)
 	token.Wait()
 
-	log.Printf("message published to topic: %s\nmessage (payload) : %s", topic, payload)
+	if token.Error() != nil {
+		return fmt.Errorf("failed to publish MQTT message: %w", token.Error())
+	}
+
+	log.Printf("[MQTT Publisher] - message published to topic: %s\nmessage (payload) : %s", topic, payload)
+
+	return nil
 }
 
 // function related to api
