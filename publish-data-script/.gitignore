@@ -1,4 +1,2 @@
-/database/migration/atlas.hcl
-/database/migration/atlas.sum
 /.env
-/sistem-manajemen-armada.exe
+/publish-data-script.exe
