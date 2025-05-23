@@ -27,7 +27,7 @@ This folder contains the backend service for the Fleet Management System. It pro
    ```
 
 2. **Configure environment variables**
-   Create a `.env` file in the root directory or set the following variables:
+   Create a `.env` file in the root directory (rename .env.example to .env or .env.production for container setup), then set the following variables:
 
    - `PORT` (e.g. `3000`)
    - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_SSL_MODE`, `DB_TIME_ZONE`

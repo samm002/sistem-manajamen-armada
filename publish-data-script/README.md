@@ -23,7 +23,7 @@ This folder contains a Go program to publish random vehicle location data to an 
    ```
 
 2. **Configure environment variables**
-   Create an `.env` file (or rename `.env.example` to `.env`), then set the following variables:
+   Create an `.env` file (rename .env.example to .env or .env.production for container setup), then set the following variables:
 
    - `MQTT_PROTOCOL` (e.g. `mqtt`)
    - `MQTT_BROKER_URL` (e.g. `localhost`)
