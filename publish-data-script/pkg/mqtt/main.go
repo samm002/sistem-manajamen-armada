@@ -18,15 +18,15 @@ var (
 )
 
 func InitializeMqtt(validator *validator.Validate) mqtt.Client {
-	brokerConnectionString := fmt.Sprintf("%s://%s:%d", config.Env.MQTT_PROTOCOL, config.Env.BROKER_URL, config.Env.BROKER_PORT)
+	brokerConnectionString := fmt.Sprintf("%s://%s:%d", config.Env.MQTT_PROTOCOL, config.Env.MQTT_BROKER_URL, config.Env.MQTT_BROKER_PORT)
 
 	options := mqtt.NewClientOptions().AddBroker(brokerConnectionString).SetClientID(config.Env.MQTT_CLIENT_ID)
 
 	options.SetDefaultPublishHandler(ReceivedMessageHandler)
 	options.OnConnect = ConnectedHandler
 	options.OnConnectionLost = ConnectionLostHandler
-	options.SetUsername(config.Env.BROKER_USERNAME)
-	options.SetPassword(config.Env.BROKER_PASSWORD)
+	options.SetUsername(config.Env.MQTT_BROKER_USERNAME)
+	options.SetPassword(config.Env.MQTT_BROKER_PASSWORD)
 	options.SetKeepAlive(2 * time.Second)
 	options.SetPingTimeout(1 * time.Second)
 

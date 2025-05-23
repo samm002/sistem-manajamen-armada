@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"log"
 	"sistem-manajemen-armada/api/common/util"
 	"sistem-manajemen-armada/api/dto"
@@ -20,7 +19,7 @@ type Service interface {
 
 	// Tidak dipakai
 	Update(vehicleId string, payload *dto.UpdateVehicleLocationDto) (*map[string]interface{}, error)
-	
+
 	// Tidak dipakai
 	Delete(vehicleId string) error
 }
@@ -47,8 +46,6 @@ func (s *service) Create(payload *dto.CreateVehicleLocationDto) (*dto.VehicleLoc
 		payload.Latitude, payload.Longitude,
 		constant.GeofenceLatitude, constant.GeofenceLongitude,
 	)
-
-	fmt.Println("distance :", distance)
 
 	if distance <= 50 {
 		encodedPayload, err := util.GenerateGeofenceEventMessage(payload, s.validator)

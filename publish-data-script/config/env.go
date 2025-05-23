@@ -9,12 +9,12 @@ import (
 )
 
 type EnvConfig struct {
-	MQTT_PROTOCOL   string `env:"MQTT_PROTOCOL" validate:"required"`
-	BROKER_URL      string `env:"BROKER_URL" validate:"required"`
-	BROKER_PORT     int    `env:"BROKER_PORT" validate:"required"`
-	BROKER_USERNAME string `env:"BROKER_USERNAME" validate:"required"`
-	BROKER_PASSWORD string `env:"BROKER_PASSWORD" validate:"required"`
-	MQTT_CLIENT_ID  string `env:"MQTT_CLIENT_ID" validate:"required"`
+	MQTT_PROTOCOL        string `env:"MQTT_PROTOCOL" validate:"required"`
+	MQTT_BROKER_URL      string `env:"MQTT_BROKER_URL" validate:"required"`
+	MQTT_BROKER_PORT     int    `env:"MQTT_BROKER_PORT" validate:"required"`
+	MQTT_BROKER_USERNAME string `env:"MQTT_BROKER_USERNAME" validate:"required"`
+	MQTT_BROKER_PASSWORD string `env:"MQTT_BROKER_PASSWORD" validate:"required"`
+	MQTT_CLIENT_ID       string `env:"MQTT_CLIENT_ID" validate:"required"`
 }
 
 var Env *EnvConfig
@@ -35,11 +35,11 @@ func validateEnv() *EnvConfig {
 }
 
 func init() {
-	err := godotenv.Load()
+	_ = godotenv.Load()
 
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
+	// if err != nil {
+	// 	log.Fatalf("Error loading .env file")
+	// }
 
 	Env = validateEnv()
 }

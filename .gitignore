@@ -1,0 +1,9 @@
+**/.env
+**/.env.production
+**/.exe
+**/atlas.hcl
+**/atlas.sum
+
+/mosquitto/data
+/mosquitto/log
+/mosquitto/config/passwordfile

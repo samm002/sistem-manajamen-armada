@@ -1,0 +1,99 @@
+services:
+  # RabbitMQ Service
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "${RABBITMQ_HOST_PORT}:${RABBITMQ_CONTAINER_PORT}"     # AMQP port
+      - "${RABBITMQ_HOST_UI_PORT}:${RABBITMQ_CONTAINER_UI_PORT}"   # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - app-network
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    ports:
+      - "${POSTGRES_HOST_PORT}:${POSTGRES_CONTAINER_PORT}"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # - ./postgres/init:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -p ${POSTGRES_CONTAINER_PORT} -d ${POSTGRES_DB}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Mosquitto MQTT Broker
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: mosquitto
+    ports:
+      - "${MQTT_HOST_PORT}:${MQTT_CONTAINER_PORT}"     # MQTT port
+      - "${MQTT_WEBSOCKET_HOST_PORT}:${MQTT_WEBSOCKET_CONTAINER_PORT}"     # WebSocket port
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    networks:
+      - app-network
+    command: mosquitto -c /mosquitto/config/mosquitto.conf
+
+  # Main API Application
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    env_file: ./backend/.env.production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      mosquitto:
+        condition: service_started
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # CLI MQTT Publisher Service
+  publish-data-script:
+    build:
+      context: ./publish-data-script
+      dockerfile: Dockerfile
+    container_name: publish-data-script
+    env_file: ./publish-data-script/.env.production
+    depends_on:
+      mosquitto:
+        condition: service_started
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  rabbitmq_data:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

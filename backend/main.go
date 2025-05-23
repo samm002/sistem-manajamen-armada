@@ -27,7 +27,7 @@ func main() {
 	router.VehicleLocationRouter(app, validatorInstance)
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
+		return c.SendString("Welcome to Fleet Management System API")
 	})
 
 	log.Printf("Server running on port %s", port)

@@ -16,7 +16,7 @@ This folder contains the backend service for the Fleet Management System. It pro
 - PostgreSQL database
 - MQTT broker and RabbitMQ server for messaging features
 - Environment variables configured
-- Setup Atlas Migration for GORM, reference : https://atlasgo.io/guides/orms/gorm/getting-started
+- Setup Atlas Migration for GORM, reference : <https://atlasgo.io/guides/orms/gorm/getting-started>
 
 ## Setup
 
@@ -31,7 +31,7 @@ This folder contains the backend service for the Fleet Management System. It pro
 
    - `PORT` (e.g. `3000`)
    - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_SSL_MODE`, `DB_TIME_ZONE`
-   - `MQTT_PROTOCOL`, `BROKER_URL`, `BROKER_PORT`, `BROKER_USERNAME`, `BROKER_PASSWORD`, `MQTT_CLIENT_ID`
+   - `MQTT_PROTOCOL`, `MQTT_BROKER_URL`, `MQTT_BROKER_PORT`, `MQTT_BROKER_USERNAME`, `MQTT_BROKER_PASSWORD`, `MQTT_CLIENT_ID`
    - `RABBITMQ_URL`
 
    Example `.env`:
@@ -46,10 +46,10 @@ This folder contains the backend service for the Fleet Management System. It pro
    DB_SSL_MODE=disable
    DB_TIME_ZONE="Asia/Shanghai"
    MQTT_PROTOCOL=mqtt
-   BROKER_URL=localhost
-   BROKER_PORT=1883
-   BROKER_USERNAME=guest
-   BROKER_PASSWORD=guest
+   MQTT_BROKER_URL=localhost
+   MQTT_BROKER_PORT=1883
+   MQTT_BROKER_USERNAME=guest
+   MQTT_BROKER_PASSWORD=guest
    MQTT_CLIENT_ID=backend
    RABBITMQ_URL=amqp://guest:guest@localhost:5672/
    ```
@@ -73,10 +73,13 @@ This folder contains the backend service for the Fleet Management System. It pro
    ```
 
 2. **Run the backend**
+
    ```powershell
    .\sistem-manajemen-armada.exe
    ```
+
    Or, run directly with Go:
+
    ```powershell
    go run main.go
    ```
@@ -86,7 +89,7 @@ This folder contains the backend service for the Fleet Management System. It pro
 See the full API documentation and example requests in the public Postman collection:
 
 **Postman Collection:**
-https://documenter.getpostman.com/view/26314293/2sB2qZG3di
+<https://documenter.getpostman.com/view/26314293/2sB2qZG3di>
 
 ### Main Endpoints
 

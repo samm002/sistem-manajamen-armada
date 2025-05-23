@@ -1,0 +1,36 @@
+# Ignore version control
+.git
+.gitignore
+
+# Ignore local environment files (but keep .env.example)
+**/.env
+!**/.env.example
+**/.env.production
+**/.env.development
+
+# Ignore logs and data
+**/mosquitto/data
+**/mosquitto/log
+**/postgres/data
+**/rabbitmq_data
+**/postgres_data
+/mosquitto/config/passwordfile
+
+# Ignore build artifacts and executables
+*.exe
+*.out
+*.bin
+
+# Ignore Go build cache
+/go-build/
+**/vendor/
+
+# Ignore IDE/editor/project files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
